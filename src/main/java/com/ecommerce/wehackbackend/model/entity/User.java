@@ -35,11 +35,17 @@ public class User implements UserDetails {
 
     private String phoneNumber;
 
-    private boolean isActive;
+    private Boolean isActive;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @Column(name = "verification_code")
+    private String verificationCode;
+
+    @Column(name = "is_verified")
+    private Boolean isVerified;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
