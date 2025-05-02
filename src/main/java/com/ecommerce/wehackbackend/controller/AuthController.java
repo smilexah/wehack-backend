@@ -35,7 +35,6 @@ public class AuthController {
         return ResponseEntity.ok("Verification code sent.");
     }
 
-
     @PostMapping("/verify-code")
     public ResponseEntity<TokenResponseDto> verifyCode(@RequestBody VerifyCodeRequestDto requestDto) {
         authService.verifyCode(requestDto);
