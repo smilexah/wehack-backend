@@ -4,7 +4,8 @@
 #ENTRYPOINT ["java", "-jar", "wehack-backend.jar"]
 
 # Build stage
-FROM maven:3.8.6-openjdk-17 AS build
+FROM maven:3.8.6-openjdk-17-slim AS build
+# or maven:3.8.6-jdk-17
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
