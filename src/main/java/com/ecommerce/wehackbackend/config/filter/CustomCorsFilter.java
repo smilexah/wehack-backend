@@ -17,11 +17,16 @@ public class CustomCorsFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
-        response.setHeader("Access-Control-Allow-Origin", "*");
+
+        // Set the specific origin(s) you want to allow instead of "*"
+        String origin = request.getHeader("Origin");
+        response.setHeader("Access-Control-Allow-Origin", origin); // or your frontend URL
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token");
         response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+
         if ("OPTIONS".equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else {

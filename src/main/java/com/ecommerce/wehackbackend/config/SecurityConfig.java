@@ -25,23 +25,6 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService userDetailsService;
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-//                        .requestMatchers("/api/auth/**").permitAll()
-//                        .requestMatchers("/api/users/me").authenticated()
-//                        .requestMatchers("/api/users/**").hasRole("ADMIN")
-//                        .anyRequest().authenticated()
-//                )
-//                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authenticationManager(authenticationManager(http))
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
