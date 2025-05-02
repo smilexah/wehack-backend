@@ -1,9 +1,6 @@
 package com.ecommerce.wehackbackend.service;
 
-import com.ecommerce.wehackbackend.exception.InvalidCodeException;
-import com.ecommerce.wehackbackend.exception.InvalidCredentialsException;
-import com.ecommerce.wehackbackend.exception.ResourceAlreadyExistsException;
-import com.ecommerce.wehackbackend.exception.ResourceNotFoundException;
+import com.ecommerce.wehackbackend.exception.*;
 import com.ecommerce.wehackbackend.model.dto.request.AuthRequestDto;
 import com.ecommerce.wehackbackend.model.dto.request.RegisterRequestDto;
 import com.ecommerce.wehackbackend.model.dto.request.SendVerificationCodeRequestDto;
@@ -17,9 +14,11 @@ import com.ecommerce.wehackbackend.repository.RoleRepository;
 import com.ecommerce.wehackbackend.repository.TokenRepository;
 import com.ecommerce.wehackbackend.repository.UserRepository;
 import com.ecommerce.wehackbackend.util.JwtUtil;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -127,18 +126,24 @@ public class AuthService {
                 .refreshToken(jwtUtil.generateRefreshToken(user))
                 .build();
     }
+
     private String generateVerificationCode() {
         int code = (int) (Math.random() * 900000) + 100000;
         return String.valueOf(code);
     }
 
     private void sendVerificationEmail(String email, String code) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject(VERIFICATION_EMAIL_SUBJECT);
-        message.setText(VERIFICATION_EMAIL_BODY + code);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(email);
+            helper.setSubject("Your Verification Code");
+            helper.setText("Your verification code is: " + code);
 
-        mailSender.send(message);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new FailedToSendVerificationCode("Failed to send verification email");
+        }
     }
 
     private AuthResponseDto generateToken(User user) {
