@@ -23,3 +23,8 @@ spring:
     user: ${DB_USERNAME:postgres} # Имя пользователя для подключения к базе данных для Flyway
     password: ${DB_PASSWORD:postgres} # Пароль для подключения к базе данных для Flyway
     schemas: ${DB_SCHEMAS:public} # Схемы базы данных, которые должны быть мигрированы
+jwt:
+  secret: ${JWT_SECRET_KEY:DHAZ7XLxWihFWk194JWLMHRxBh29Q22FTf7Ss9Slz0zwUSdJBmyA2OaCSTcGCmxroReFVCCkc99ViokJejocVVLWDArUUdZHiu0xxPqkJobsOGfh03529rryKJv8cdvvSkziZcfww776wKqkbDT2HxkPvCfILVWwXTYFqEefjoTPW2mlGwp1xI67IdCyw4atGxljop2pih0WAqesxcPqLHcxJSECTCUIKacOlmlpGSWohcQVHWHSpgvep0tJZBfr}
+springdoc:
+  api-docs:
+    path: /v3/api-docs
