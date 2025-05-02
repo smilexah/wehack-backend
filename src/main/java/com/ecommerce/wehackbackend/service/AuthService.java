@@ -1,5 +1,6 @@
 package com.ecommerce.wehackbackend.service;
 
+import com.ecommerce.wehackbackend.exception.InvalidCredentialsException;
 import com.ecommerce.wehackbackend.exception.ResourceAlreadyExistsException;
 import com.ecommerce.wehackbackend.exception.ResourceNotFoundException;
 import com.ecommerce.wehackbackend.model.dto.request.AuthRequestDto;
@@ -13,6 +14,7 @@ import com.ecommerce.wehackbackend.repository.UserRepository;
 import com.ecommerce.wehackbackend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,8 +57,12 @@ public class AuthService {
     }
 
     public AuthResponseDto login(AuthRequestDto req) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+        try {
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
         var user = userRepo.findByEmail(req.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", req.getEmail()));
         return generateToken(user);

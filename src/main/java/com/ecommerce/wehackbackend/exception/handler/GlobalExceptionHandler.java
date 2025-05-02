@@ -1,5 +1,6 @@
 package com.ecommerce.wehackbackend.exception.handler;
 
+import com.ecommerce.wehackbackend.exception.InvalidCredentialsException;
 import com.ecommerce.wehackbackend.exception.ResourceNotFoundException;
 import com.ecommerce.wehackbackend.model.dto.response.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(errorResponseDto, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidCredentialsException(InvalidCredentialsException e,
+                                                                            WebRequest webRequest) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
     }
 }
