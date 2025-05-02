@@ -7,6 +7,8 @@ CREATE TABLE users
     last_name    VARCHAR(255),
     phone_number VARCHAR(255),
     is_active    BOOLEAN   DEFAULT TRUE,
+    is_verified  BOOLEAN   DEFAULT FALSE,
+    verification_code VARCHAR(255),
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

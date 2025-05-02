@@ -1,6 +1,19 @@
 server:
   port: 8080
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: mikooosia005@gmail.com
+    password: ootgdxkfvsdctklf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
   application:
     name: "wehack-backend"
   datasource:
