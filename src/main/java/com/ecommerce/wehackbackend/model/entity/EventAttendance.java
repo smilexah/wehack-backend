@@ -12,20 +12,23 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "event_attendance")
-@IdClass(EventAttendanceId.class)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventAttendance {
-    @Id
+
+    @EmbeddedId
+    private EventAttendanceId id;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
+    @MapsId("eventId")
+    @JoinColumn(name = "event_id")
     private Event event;
 
     @Column(name = "attended_at", nullable = false)
@@ -33,10 +36,4 @@ public class EventAttendance {
 
     @Column(name = "points_awarded", nullable = false)
     private Integer pointsAwarded = 0;
-}
-
-@Embeddable
-class EventAttendanceId implements Serializable {
-    private Long userId;
-    private Long eventId;
 }
