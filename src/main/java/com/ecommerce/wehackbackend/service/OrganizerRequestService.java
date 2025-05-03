@@ -1,5 +1,6 @@
 package com.ecommerce.wehackbackend.service;
 
+import com.ecommerce.wehackbackend.exception.ResourceAlreadyExistsException;
 import com.ecommerce.wehackbackend.exception.ResourceNotFoundException;
 import com.ecommerce.wehackbackend.model.dto.request.OrganizerRequestDto;
 import com.ecommerce.wehackbackend.model.entity.Club;
@@ -36,13 +37,13 @@ public class OrganizerRequestService {
         String email = auth.getName();
 
         User user = userRepository.findByEmailAndIsActive(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
         Club club = clubRepository.findById(dto.clubId())
-                .orElseThrow(() -> new EntityNotFoundException("Club not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Club", "id", dto.clubId().toString()));
 
         boolean exists = organizerRequestRepository.existsByUserIdAndClubId(user.getId(), club.getId());
-        if (exists) throw new IllegalStateException("You already have a pending request for this club");
+        if (exists) throw new ResourceAlreadyExistsException("Request", "id", "");
 
         OrganizerRequest request = new OrganizerRequest();
         request.setUser(user);
@@ -60,7 +61,7 @@ public class OrganizerRequestService {
     @Transactional
     public void updateStatus(Long requestId, OrganizerRequest.Status newStatus) {
         OrganizerRequest request = organizerRequestRepository.findById(requestId)
-                .orElseThrow(() -> new EntityNotFoundException("Request not found"));
+                .orElseThrow(() -> new ResourceAlreadyExistsException("Request", "id", requestId.toString()));
 
         request.setStatus(newStatus);
         request.setReviewedAt(LocalDateTime.now());
