@@ -9,8 +9,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
-    Optional<User> findByTgLinkToken(String token);
-
     @Query(value = "SELECT u.* FROM users u WHERE u.is_active=true AND u.email=:email", nativeQuery = true )
     Optional<User> findByEmailAndIsActive(String email);
 
