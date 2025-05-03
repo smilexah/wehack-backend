@@ -36,7 +36,7 @@ public class Ticket {
     @Column(nullable = false)
     private String status;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "used_at")

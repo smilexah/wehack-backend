@@ -4,6 +4,7 @@ import com.ecommerce.wehackbackend.exception.ResourceNotFoundException;
 import com.ecommerce.wehackbackend.mapper.EventMapper;
 import com.ecommerce.wehackbackend.model.dto.request.EventRequestDto;
 import com.ecommerce.wehackbackend.model.dto.request.EventReviewRequestDto;
+import com.ecommerce.wehackbackend.model.dto.request.QrCodeRequest;
 import com.ecommerce.wehackbackend.model.dto.response.EventResponseDto;
 import com.ecommerce.wehackbackend.model.entity.*;
 import com.ecommerce.wehackbackend.repository.*;
@@ -227,11 +228,12 @@ public class EventService {
 //    }
 
     @Transactional
-    public void checkInToEvent(Long eventId, String qrCode, User checkedInBy) {
+    public void checkInToEvent(Long eventId, QrCodeRequest qrCode, User checkedInBy) {
+        String qr = qrCode.getQrCode();
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId.toString()));
 
-        Ticket ticket = ticketRepository.findByQrCode(qrCode)
+        Ticket ticket = ticketRepository.findByQrCode(qr)
                 .orElseThrow(() -> new BadRequestException("Invalid QR code"));
 
         validateTicketForCheckIn(eventId, ticket);

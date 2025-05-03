@@ -30,7 +30,11 @@ public class TicketController {
 
     @GetMapping("/{id}/qr")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<String> getTicketQrCode(@PathVariable Long id) {
-        return ResponseEntity.ok(ticketService.getQrCode(id));
+    public ResponseEntity<byte[]> getTicketQrCode(@PathVariable Long id) {
+        byte[] qrCodeImage = ticketService.getQrCodeImage(id);
+        return ResponseEntity
+                .ok()
+                .header("Content-Type", "image/png")
+                .body(qrCodeImage);
     }
 }

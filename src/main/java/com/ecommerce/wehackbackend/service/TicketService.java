@@ -11,14 +11,13 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Base64;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -43,40 +42,60 @@ public class TicketService {
     }
 
     private Ticket createTicket(Order order) {
+        String qrText = generateQrCodeText(order); // текст QR для сохранения в БД
         return Ticket.builder()
                 .order(order)
                 .user(order.getUser())
                 .event(order.getEvent())
-                .qrCode(generateQRCodeImage(order))
+                .qrCode(qrText) // сохраняем только текст!
+                .createdAt(LocalDateTime.now())
                 .status("ACTIVE")
                 .build();
     }
 
-    private String generateQRCodeImage(Order order) {
-        String qrContent = "TICKET-" + order.getId() + "-" + UUID.randomUUID();
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+    private String generateQrCodeText(Order order) {
+        // Генерируем читаемый уникальный идентификатор
+        return String.format(
+                "EVENT:%d|USER:%d|TICKET:%s",
+                order.getEvent().getId(),
+                order.getUser().getId(),
+                UUID.randomUUID().toString().replace("-", "").substring(0, 12)
+        );
+    }
+
+    public byte[] getQrCodeImage(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket", "id", ticketId.toString()));
+
+        validateTicketAccess(ticket);
+
+        return generateQrCodeImage(ticket.getQrCode());
+    }
+
+    private byte[] generateQrCodeImage(String content) {
         try {
-            BitMatrix bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 200, 200);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
-            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 300, 300);
+
+            ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+
+            return pngOutputStream.toByteArray();
         } catch (WriterException | IOException e) {
-            throw new RuntimeException("Error generating QR code", e);
+            throw new RuntimeException("Failed to generate QR code", e);
         }
     }
 
-    private Ticket createTicket(Order order, User user, Event event) {
-        Ticket ticket = new Ticket();
-        ticket.setOrder(order);
-        ticket.setUser(user);
-        ticket.setEvent(event);
-        ticket.setQrCode(generateQrCode(order));
-        ticket.setStatus("ACTIVE");
-        return ticket;
-    }
-
-    private String generateQrCode(Order order) {
-        return "TICKET-" + order.getId() + "-" + UUID.randomUUID().toString().substring(0, 8);
+    private byte[] generateQrCodePng(String content) {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        try {
+            BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 200, 200);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+            return outputStream.toByteArray();
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException("Failed to generate QR code", e);
+        }
     }
 
     public List<TicketResponseDto> getUserTickets() {
@@ -91,14 +110,6 @@ public class TicketService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket", "id", id.toString()));
         validateTicketAccess(ticket);
         return ticketMapper.toDto(ticket);
-    }
-
-    public String getQrCode(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket", "id", ticketId.toString()));
-
-        validateTicketAccess(ticket);
-        return ticket.getQrCode();
     }
 
     private void validateTicketAccess(Ticket ticket) {

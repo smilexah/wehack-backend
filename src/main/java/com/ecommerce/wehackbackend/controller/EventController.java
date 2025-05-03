@@ -2,6 +2,7 @@ package com.ecommerce.wehackbackend.controller;
 
 import com.ecommerce.wehackbackend.model.dto.request.EventRequestDto;
 import com.ecommerce.wehackbackend.model.dto.request.EventReviewRequestDto;
+import com.ecommerce.wehackbackend.model.dto.request.QrCodeRequest;
 import com.ecommerce.wehackbackend.model.dto.response.EventResponseDto;
 import com.ecommerce.wehackbackend.model.entity.Event;
 import com.ecommerce.wehackbackend.model.entity.User;
@@ -126,7 +127,7 @@ public class EventController {
     @PreAuthorize("hasAnyRole('CLUB_MANAGER', 'ADMIN')")
     public ResponseEntity<Void> checkInToEvent(
             @PathVariable Long id,
-            @RequestParam String qrCode,
+            @RequestBody QrCodeRequest qrCode,
             @AuthenticationPrincipal User checkedInBy) {
         eventService.checkInToEvent(id, qrCode, checkedInBy);
         return ResponseEntity.ok().build();
