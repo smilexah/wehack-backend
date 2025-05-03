@@ -84,4 +84,14 @@ public class EventController {
 //        eventService.checkInToEvent(id, qrCode, checkedInBy);
 //        return ResponseEntity.ok().build();
 //    }
+
+    @PostMapping("/{id}/checkin")
+    @PreAuthorize("hasAnyRole('CLUB_MANAGER', 'ADMIN')")
+    public ResponseEntity<Void> checkInToEvent(
+            @PathVariable Long id,
+            @RequestParam String qrCode,
+            @AuthenticationPrincipal User checkedInBy) {
+        eventService.checkInToEvent(id, qrCode, checkedInBy);
+        return ResponseEntity.ok().build();
+    }
 }

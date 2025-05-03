@@ -5,12 +5,19 @@ import com.ecommerce.wehackbackend.mapper.TicketMapper;
 import com.ecommerce.wehackbackend.model.dto.response.TicketResponseDto;
 import com.ecommerce.wehackbackend.model.entity.*;
 import com.ecommerce.wehackbackend.repository.TicketRepository;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -40,16 +47,22 @@ public class TicketService {
                 .order(order)
                 .user(order.getUser())
                 .event(order.getEvent())
-                .qrCode(generateSecureQrCode(order))
+                .qrCode(generateQRCodeImage(order))
                 .status("ACTIVE")
                 .build();
     }
 
-    private String generateSecureQrCode(Order order) {
-        String base = order.getId() + "-" + order.getUser().getId() + "-" + System.currentTimeMillis();
-        return Base64.getEncoder().encodeToString(
-                DigestUtils.sha256(base + UUID.randomUUID())
-        ).substring(0, 20);
+    private String generateQRCodeImage(Order order) {
+        String qrContent = "TICKET-" + order.getId() + "-" + UUID.randomUUID();
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        try {
+            BitMatrix bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 200, 200);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException("Error generating QR code", e);
+        }
     }
 
     private Ticket createTicket(Order order, User user, Event event) {

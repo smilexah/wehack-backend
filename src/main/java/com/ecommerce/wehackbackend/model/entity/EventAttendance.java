@@ -31,6 +31,10 @@ public class EventAttendance {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "checked_in_by")
+    private User checkedInBy;
+
     @Column(name = "attended_at", nullable = false)
     private LocalDateTime attendedAt = LocalDateTime.now();
 

@@ -38,4 +38,7 @@ public class Ticket {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "used_at")
+    private LocalDateTime usedAt;
 }

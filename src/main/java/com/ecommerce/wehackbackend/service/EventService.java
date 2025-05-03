@@ -10,8 +10,10 @@ import com.ecommerce.wehackbackend.repository.*;
 import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -209,4 +211,47 @@ public class EventService {
 //        loyaltyPoints.setUpdatedAt(LocalDateTime.now());
 //        userLoyaltyPointsRepository.save(loyaltyPoints);
 //    }
+
+    @Transactional
+    public void checkInToEvent(Long eventId, String qrCode, User checkedInBy) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId.toString()));
+
+        Ticket ticket = ticketRepository.findByQrCode(qrCode)
+                .orElseThrow(() -> new BadRequestException("Invalid QR code"));
+
+        validateTicketForCheckIn(eventId, ticket);
+        updateTicketStatus(ticket);
+        createAttendanceRecord(event, ticket, checkedInBy);
+    }
+
+
+
+    private void validateTicketForCheckIn(Long eventId, Ticket ticket) {
+        if (!ticket.getEvent().getId().equals(eventId)) {
+            throw new BadRequestException("Ticket not valid for this event");
+        }
+        if ("USED".equals(ticket.getStatus())) {
+            throw new BadRequestException("Ticket already used");
+        }
+        if ("CANCELLED".equals(ticket.getStatus())) {
+            throw new BadRequestException("Ticket cancelled");
+        }
+    }
+
+    private void updateTicketStatus(Ticket ticket) {
+        ticket.setStatus("USED");
+        ticket.setUsedAt(LocalDateTime.now());
+        ticketRepository.save(ticket);
+    }
+
+    private void createAttendanceRecord(Event event, Ticket ticket, User checkedInBy) {
+        EventAttendance attendance = new EventAttendance();
+        attendance.setId(new EventAttendanceId(ticket.getUser().getId(), event.getId()));
+        attendance.setUser(ticket.getUser());
+        attendance.setEvent(event);
+        attendance.setCheckedInBy(checkedInBy);
+        attendance.setAttendedAt(LocalDateTime.now());
+        eventAttendanceRepository.save(attendance);
+    }
 }
