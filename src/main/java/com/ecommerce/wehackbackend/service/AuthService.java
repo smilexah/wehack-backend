@@ -16,7 +16,6 @@ import com.ecommerce.wehackbackend.repository.UserRepository;
 import com.ecommerce.wehackbackend.util.JwtUtil;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -110,7 +109,7 @@ public class AuthService {
         sendVerificationEmail(user.getEmail(), code);
     }
 
-    public TokenResponseDto verifyCode(VerifyCodeRequestDto req) {
+    public AuthResponseDto verifyCode(VerifyCodeRequestDto req) {
         var user = userRepo.findByEmail(req.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", req.getEmail()));
 
@@ -121,10 +120,7 @@ public class AuthService {
         user.setIsVerified(true);
         userRepo.save(user);
 
-        return TokenResponseDto.builder()
-                .accessToken(jwtUtil.generateToken(user))
-                .refreshToken(jwtUtil.generateRefreshToken(user))
-                .build();
+        return generateToken(user);
     }
 
     private String generateVerificationCode() {
