@@ -1,6 +1,7 @@
 package com.ecommerce.wehackbackend.controller;
 
 import com.ecommerce.wehackbackend.model.dto.request.VenueRequestDto;
+import com.ecommerce.wehackbackend.model.dto.response.EventResponseDto;
 import com.ecommerce.wehackbackend.model.dto.response.VenueResponseDto;
 import com.ecommerce.wehackbackend.service.VenueService;
 import jakarta.validation.Valid;
@@ -50,4 +51,11 @@ public class VenueController {
         venueService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/events")
+    @PreAuthorize("hasAnyRole('STUDENT', 'CLUB_MANAGER', 'ADMIN')")
+    public ResponseEntity<List<EventResponseDto>> getEventsInHall(@PathVariable Long id) {
+        return ResponseEntity.ok(venueService.getEventsInVenue(id));
+    }
+
 }
