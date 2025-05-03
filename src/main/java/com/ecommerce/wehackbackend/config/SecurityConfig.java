@@ -47,6 +47,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("api/users/test").permitAll()
                 .requestMatchers("/api/users/me").authenticated()
                 .requestMatchers("/api/users/generate-telegram-token").authenticated()
                 //.requestMatchers("/api/users/**").hasRole("ADMIN")
