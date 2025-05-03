@@ -1,6 +1,7 @@
 package com.ecommerce.wehackbackend.service;
 
 
+import com.ecommerce.wehackbackend.exception.ResourceNotFoundException;
 import com.ecommerce.wehackbackend.mapper.EventMapper;
 import com.ecommerce.wehackbackend.mapper.VenueMapper;
 import com.ecommerce.wehackbackend.model.dto.request.VenueRequestDto;
@@ -36,7 +37,7 @@ public class VenueService {
 
     public VenueResponseDto getById(Long id) {
         Venue venue = venueRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Venue not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Venue", "ID", id.toString()));
         return venueMapper.toDto(venue);
     }
 
@@ -53,7 +54,7 @@ public class VenueService {
     @Transactional
     public VenueResponseDto update(Long id, VenueRequestDto dto) {
         Venue venue = venueRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Venue not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Venue", "ID", id.toString()));
         venueMapper.updateVenue(venue, dto);
         return venueMapper.toDto(venueRepository.save(venue));
     }
