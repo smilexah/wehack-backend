@@ -37,7 +37,14 @@ public class User implements UserDetails {
 
     private Boolean isActive;
 
+    private Long tgChatId;
+
+    private String tgLinkToken;
+
+
     private LocalDateTime createdAt;
+
+    private LocalDateTime tgTokenCreatedAt;
 
     private LocalDateTime updatedAt;
 

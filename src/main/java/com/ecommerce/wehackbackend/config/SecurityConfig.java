@@ -42,13 +42,14 @@ public class SecurityConfig {
         http.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.accessDeniedHandler(new CustomAccessDeniedHandler())
         );
 
-//        http.addFilterBefore(new CustomCorsFilter(), ChannelProcessingFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/me").authenticated()
-                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                .requestMatchers("/api/users/generate-telegram-token").authenticated()
+                //.requestMatchers("/api/users/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
 

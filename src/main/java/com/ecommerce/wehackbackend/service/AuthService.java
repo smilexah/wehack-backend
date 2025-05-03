@@ -43,7 +43,7 @@ public class AuthService {
     private static final String VERIFICATION_EMAIL_BODY = "Your verification code is: ";
 
     public RegisterResponseDto register(RegisterRequestDto req) {
-        userRepo.findByEmail(req.getEmail())
+        userRepo.findByEmailAndIsActive(req.getEmail())
                 .ifPresent(user -> {
                     throw new ResourceAlreadyExistsException("User", "email", req.getEmail());
                 });
@@ -76,7 +76,7 @@ public class AuthService {
         } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
-        var user = userRepo.findByEmail(req.getEmail())
+        var user = userRepo.findByEmailAndIsActive(req.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", req.getEmail()));
         return generateToken(user);
     }
@@ -84,7 +84,7 @@ public class AuthService {
     public AuthResponseDto refresh(String token) {
         var username = jwtUtil.extractUsername(token);
 
-        var user = userRepo.findByEmail(username)
+        var user = userRepo.findByEmailAndIsActive(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", username));
 
         return generateToken(user);
