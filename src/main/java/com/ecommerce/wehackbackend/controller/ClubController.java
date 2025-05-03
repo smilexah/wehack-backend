@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/clubs")
@@ -18,8 +20,8 @@ public class ClubController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('STUDENT', 'CLUB_MANAGER', 'ADMIN')")
-    public ResponseEntity<Page<ClubResponseDto>> getAllClubs(Pageable pageable) {
-        return ResponseEntity.ok(clubService.getAllClubs(pageable));
+    public ResponseEntity<List<ClubResponseDto>> getAllClubs() {
+        return ResponseEntity.ok(clubService.getAllClubs());
     }
 
     @GetMapping("/{id}")
@@ -51,9 +53,9 @@ public class ClubController {
 
     @GetMapping("/{id}/events")
     @PreAuthorize("hasAnyRole('STUDENT', 'CLUB_MANAGER', 'ADMIN')")
-    public ResponseEntity<Page<ClubResponseDto.EventDTO>> getClubEvents(
-            @PathVariable Long id,
-            Pageable pageable) {
-        return ResponseEntity.ok(clubService.getClubEvents(id, pageable));
+    public ResponseEntity<List<ClubResponseDto.EventDTO>> getClubEvents(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(clubService.getClubEvents(id));
     }
+
 }

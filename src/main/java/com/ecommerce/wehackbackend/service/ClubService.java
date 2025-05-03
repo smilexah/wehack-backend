@@ -11,15 +11,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ClubService {
     private final ClubRepository clubRepository;
     private final ClubMapper clubMapper;
 
-    public Page<ClubResponseDto> getAllClubs(Pageable pageable) {
-        return clubRepository.findAll(pageable)
-                .map(clubMapper::toDto);
+    public List<ClubResponseDto> getAllClubs() {
+        return clubRepository.findAll()
+                .stream()
+                .map(clubMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public ClubResponseDto getClubById(Long id) {
@@ -49,10 +54,12 @@ public class ClubService {
         clubRepository.delete(club);
     }
 
-    public Page<ClubResponseDto.EventDTO> getClubEvents(Long id, Pageable pageable) {
+    public List<ClubResponseDto.EventDTO> getClubEvents(Long id) {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("club", "id", id.toString()));
-        return clubRepository.findEventsByClubId(club.getId(), pageable)
-                .map(clubMapper::eventToDto);
+        return clubRepository.findEventsByClubId(club.getId())
+                .stream()
+                .map(clubMapper::eventToDto)
+                .collect(Collectors.toList());
     }
 }
