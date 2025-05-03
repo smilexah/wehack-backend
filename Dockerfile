@@ -18,7 +18,7 @@ USER spring:spring
 WORKDIR /app
 COPY --from=builder /usr/src/app/target/*.jar app.jar
 
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+ENV JAVA_OPTS="-Xmx512m -Xms256m"
 ENV SPRING_PROFILES_ACTIVE="production"
 
 EXPOSE 8080
