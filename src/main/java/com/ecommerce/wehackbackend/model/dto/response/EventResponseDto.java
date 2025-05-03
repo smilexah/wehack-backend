@@ -1,19 +1,16 @@
 package com.ecommerce.wehackbackend.model.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class EventResponseDto {
     private Long id;
+    private ClubDTO club;
+    private VenueDTO venue;
     private String title;
     private String description;
     private LocalDate date;
@@ -23,6 +20,40 @@ public class EventResponseDto {
     private Double price;
     private Integer capacity;
     private LocalDateTime createdAt;
-    private String clubName;
-    private String venueName;
+    private List<TicketDTO> tickets;
+    private List<ReviewDTO> reviews;
+
+    @Data
+    public static class ClubDTO {
+        private Long id;
+        private String name;
+    }
+
+    @Data
+    public static class VenueDTO {
+        private Long id;
+        private String name;
+        private String location;
+    }
+
+    @Data
+    public static class TicketDTO {
+        private Long id;
+        private String qrCode;
+        private String status;
+    }
+
+    @Data
+    public static class ReviewDTO {
+        private Long id;
+        private Integer rating;
+        private String comment;
+        private UserDTO author;
+
+        @Data
+        public static class UserDTO {
+            private Long id;
+            private String username;
+        }
+    }
 }
