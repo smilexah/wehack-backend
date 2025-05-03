@@ -3,14 +3,19 @@ package com.ecommerce.wehackbackend.controller;
 import com.ecommerce.wehackbackend.model.dto.request.EventRequestDto;
 import com.ecommerce.wehackbackend.model.dto.request.EventReviewRequestDto;
 import com.ecommerce.wehackbackend.model.dto.response.EventResponseDto;
+import com.ecommerce.wehackbackend.model.entity.Event;
 import com.ecommerce.wehackbackend.model.entity.User;
 import com.ecommerce.wehackbackend.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @RestController
@@ -18,6 +23,38 @@ import java.util.List;
 @RequestMapping("/api/events")
 public class EventController {
     private final EventService eventService;
+
+    @GetMapping("/filter")
+    @PreAuthorize("hasAnyRole('STUDENT', 'CLUB_MANAGER', 'ADMIN')")
+    public List<EventResponseDto> filterEvents(
+            @RequestParam(required = false) String filterType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate specificDate) {
+
+        if (filterType != null) {
+            LocalDate today = LocalDate.now();
+
+            switch (filterType) {
+                case "today":
+                    return eventService.findEventsByDate(today);
+                case "thisWeek":
+                    LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                    LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+                    return eventService.findEventsBetweenDates(startOfWeek, endOfWeek);
+                case "nextWeek":
+                    LocalDate nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+                    LocalDate nextSunday = nextMonday.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
+                    return eventService.findEventsBetweenDates(nextMonday, nextSunday);
+                case "thisMonth":
+                    LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
+                    LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+                    return eventService.findEventsBetweenDates(startOfMonth, endOfMonth);
+            }
+        } else if (specificDate != null) {
+            return eventService.findEventsByDate(specificDate);
+        }
+
+        return eventService.getAllEvents();
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('STUDENT', 'CLUB_MANAGER', 'ADMIN')")

@@ -35,8 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     String token = parts[1];
                     handleToken(chatId, token);
                 } else {
-                    sendMessage(chatId, "\uD83D\uDC4B Hello! To link your account, follow the link on the website.");
-                }
+                    sendMessage(chatId, "👋 Hello! To link your account, simply visit our secure login page below:\n\n🔗 https://we-hack-front-self.vercel.app/auth/login\n\nClick the link or copy it into your browser to get started!");                }
             }
         }
     }

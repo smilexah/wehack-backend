@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +29,21 @@ public class EventService {
     private final EventMapper eventMapper;
 
     public List<EventResponseDto> getAllEvents() {
-        return eventRepository.findAll()
+        return eventRepository.findAllUpcomingEvents()
+                .stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventResponseDto> findEventsByDate(LocalDate date) {
+        return eventRepository.findByDate(date)
+                .stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventResponseDto> findEventsBetweenDates(LocalDate startDate, LocalDate endDate) {
+        return eventRepository.findByDateBetween(startDate, endDate)
                 .stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toList());
