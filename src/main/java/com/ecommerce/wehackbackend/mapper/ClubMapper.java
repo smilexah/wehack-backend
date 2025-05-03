@@ -4,9 +4,7 @@ import com.ecommerce.wehackbackend.model.dto.request.ClubRequestDto;
 import com.ecommerce.wehackbackend.model.dto.response.ClubResponseDto;
 import com.ecommerce.wehackbackend.model.entity.Club;
 import com.ecommerce.wehackbackend.model.entity.Event;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

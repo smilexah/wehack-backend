@@ -10,5 +10,6 @@ COMMENT ON COLUMN roles.name IS 'Role name used for authorization checks';
 
 INSERT INTO roles (name)
 VALUES
-    ('USER'),
+    ('STUDENT'),
+    ('CLUB_MANAGER'),
     ('ADMIN');

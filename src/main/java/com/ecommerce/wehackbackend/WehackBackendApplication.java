@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(TelegramBotProperties.class)
-
 @OpenAPIDefinition(
         info = @Info(
                 title = "WeHack Backend API",

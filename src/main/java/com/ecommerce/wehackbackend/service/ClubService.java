@@ -52,7 +52,7 @@ public class ClubService {
     public Page<ClubResponseDto.EventDTO> getClubEvents(Long id, Pageable pageable) {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("club", "id", id.toString()));
-        return clubRepository.findEventsByClubId(id, pageable)
+        return clubRepository.findEventsByClubId(club.getId(), pageable)
                 .map(clubMapper::eventToDto);
     }
 }
