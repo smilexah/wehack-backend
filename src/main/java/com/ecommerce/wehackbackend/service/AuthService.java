@@ -47,8 +47,8 @@ public class AuthService {
                     throw new ResourceAlreadyExistsException("User", "email", req.getEmail());
                 });
 
-        var role = roleRepo.findByName("USER")
-                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", "USER"));
+        var role = roleRepo.findByName("STUDENT")
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", "STUDENT"));
 
         var user = User.builder()
                 .email(req.getEmail())
