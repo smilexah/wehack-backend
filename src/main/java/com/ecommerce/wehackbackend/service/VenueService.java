@@ -2,15 +2,14 @@ package com.ecommerce.wehackbackend.service;
 
 
 import com.ecommerce.wehackbackend.exception.ResourceNotFoundException;
-import com.ecommerce.wehackbackend.mapper.EventMapper;
+import com.ecommerce.wehackbackend.mapper.EventMapperForVenue;
 import com.ecommerce.wehackbackend.mapper.VenueMapper;
 import com.ecommerce.wehackbackend.model.dto.request.VenueRequestDto;
-import com.ecommerce.wehackbackend.model.dto.response.EventResponseDto;
+import com.ecommerce.wehackbackend.model.dto.response.EventResponseForVenueDto;
 import com.ecommerce.wehackbackend.model.dto.response.VenueResponseDto;
 import com.ecommerce.wehackbackend.model.entity.Venue;
 import com.ecommerce.wehackbackend.repository.EventRepository;
 import com.ecommerce.wehackbackend.repository.VenueRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ public class VenueService {
     private final VenueRepository venueRepository;
     private final EventRepository eventRepository;
     private final VenueMapper venueMapper;
-    private final EventMapper eventMapper;
+    private final EventMapperForVenue eventMapperForVenue;
 
     public List<VenueResponseDto> getAll() {
         return venueRepository.findAll()
@@ -41,8 +40,8 @@ public class VenueService {
         return venueMapper.toDto(venue);
     }
 
-    public List<EventResponseDto> getEventsInVenue(Long venueId) {
-        return eventMapper.toDtoList(eventRepository.findAllByVenueId(venueId));
+    public List<EventResponseForVenueDto> getEventsInVenue(Long venueId) {
+        return eventMapperForVenue.toDtoList(eventRepository.findAllByVenueId(venueId));
     }
 
     @Transactional

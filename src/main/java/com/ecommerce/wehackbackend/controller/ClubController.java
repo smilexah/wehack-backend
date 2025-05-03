@@ -4,8 +4,6 @@ import com.ecommerce.wehackbackend.model.dto.request.ClubRequestDto;
 import com.ecommerce.wehackbackend.model.dto.response.ClubResponseDto;
 import com.ecommerce.wehackbackend.service.ClubService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -57,5 +55,4 @@ public class ClubController {
             @PathVariable Long id) {
         return ResponseEntity.ok(clubService.getClubEvents(id));
     }
-
 }

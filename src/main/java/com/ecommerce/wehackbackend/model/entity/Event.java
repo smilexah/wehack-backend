@@ -48,6 +48,9 @@ public class Event {
     @Column(name = "streaming_url")
     private String streamingUrl;
 
+    @Transient
+    private Double averageRating;
+
     private Double price;
     private Integer capacity;
 
