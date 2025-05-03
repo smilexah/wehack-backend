@@ -12,8 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UserLoyaltyPoints {
     @Id
+    @Column(name = "user_id")
+    private Long userId;
+
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @MapsId
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
     @Column(nullable = false)
