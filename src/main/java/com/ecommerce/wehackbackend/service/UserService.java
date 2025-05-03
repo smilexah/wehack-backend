@@ -8,6 +8,9 @@ import com.ecommerce.wehackbackend.model.entity.User;
 import com.ecommerce.wehackbackend.repository.UserRepository;
 import com.ecommerce.wehackbackend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +48,21 @@ public class UserService {
         userRepository.save(user);
 
         return "https://t.me/" + telegramBotProperties.getBotUsername() + "?start=" + token;
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User not authenticated");
+        }
+
+        String email = authentication.getName();
+        return getUserByEmail(email);
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepository.findByEmailAndIsActive(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
     }
 
 }
