@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,11 +36,11 @@ public class Event {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    @Column(nullable = false)
+    private LocalDate date;
 
-    @Column(name = "end_time")
-    private LocalDateTime endTime;
+    @Column(nullable = false)
+    private String time;
 
     @Column(name = "is_online", nullable = false)
     private Boolean isOnline = false;
