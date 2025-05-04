@@ -95,6 +95,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * Sends a message with MarkdownV2 formatting
      * @param chatId Target chat ID
+     *
      * @param text Message text with MarkdownV2 formatting
      */
     public void sendMarkdownV2Message(Long chatId, String text) {
