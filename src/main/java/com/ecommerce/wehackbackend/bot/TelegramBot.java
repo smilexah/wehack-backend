@@ -82,6 +82,33 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Sends a message with Markdown formatting support
+     * @param chatId Target chat ID
+     * @param text Message text with Markdown formatting
+     * @param disableWebPagePreview Whether to disable link previews
+     */
+    public void sendMessageWithMarkdown(Long chatId, String text, boolean disableWebPagePreview) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+        message.enableMarkdown(true);
+        message.setDisableWebPagePreview(disableWebPagePreview);
+
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Error sending Markdown message: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Overload with default disabled web page preview
+     */
+    public void sendMessageWithMarkdown(Long chatId, String text) {
+        sendMessageWithMarkdown(chatId, text, true);
+    }
+
     @Override
     public String getBotUsername() {
         return telegramBotProperties.getBotUsername();

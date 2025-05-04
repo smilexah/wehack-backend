@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,11 +37,6 @@ public class Club {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
     private List<ClubReview> reviews;
 
-    @ManyToMany
-    @JoinTable(
-            name = "club_subscriptions",
-            joinColumns = @JoinColumn(name = "club_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> subscribers;
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Subscription> subscriptions = new ArrayList<>();
 }

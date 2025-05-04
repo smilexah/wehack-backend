@@ -28,6 +28,8 @@ public class EventService {
     private final EventAttendanceRepository eventAttendanceRepository;
     private final TicketRepository ticketRepository;
     private final EventMapper eventMapper;
+    private final SubscriptionService subscriptionService;
+    private final TelegramNotificationService notificationService;
 
     public List<EventResponseDto> getAllEvents() {
         return eventRepository.findAllUpcomingEvents()
@@ -70,6 +72,14 @@ public class EventService {
         }
 
         Event savedEvent = eventRepository.save(event);
+
+        Long clubId = savedEvent.getClub().getId();
+
+        List<Long> userIds = subscriptionService.getUserIds(clubId);
+
+        notificationService.sendEventNotifications(userIds, savedEvent);
+
+
         return eventMapper.toDto(savedEvent);
     }
 
