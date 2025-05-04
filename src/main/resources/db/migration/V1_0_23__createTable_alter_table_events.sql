@@ -1,2 +1,2 @@
-ALTER TABLE event_attendance
+ALTER TABLE events
     ADD COLUMN total_capacity INT;
