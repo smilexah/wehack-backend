@@ -77,6 +77,9 @@ public class AuthService {
         }
         var user = userRepo.findByEmailAndIsActive(req.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", req.getEmail()));
+        if (!user.getIsVerified()) {
+            throw new InvalidCredentialsException("Please, verify your email");
+        }
         return generateToken(user);
     }
 
