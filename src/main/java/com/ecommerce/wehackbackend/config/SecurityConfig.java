@@ -58,7 +58,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "https://wehack-backend-production.up.railway.app/", "http://localhost:3002")); // Your frontend origin
+        configuration.setAllowedOrigins(Arrays.asList("https://we-hack-front-self.vercel.app/", "http://localhost:3002", "http://localhost:3000")); // Your frontend origin
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "xsrf-token"));
         configuration.setExposedHeaders(Arrays.asList("xsrf-token"));
