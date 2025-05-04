@@ -64,6 +64,7 @@ public class EventService {
         Club club = clubRepository.findById(eventRequestDTO.getClubId())
                 .orElseThrow(() -> new ResourceNotFoundException("club", "clubId", eventRequestDTO.getClubId().toString()));
         event.setClub(club);
+        event.setTotalCapacity(eventRequestDTO.getCapacity());
 
         if (eventRequestDTO.getVenueId() != null) {
             Venue venue = venueRepository.findById(eventRequestDTO.getVenueId())

@@ -1,5 +1,6 @@
 package com.ecommerce.wehackbackend.model.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
