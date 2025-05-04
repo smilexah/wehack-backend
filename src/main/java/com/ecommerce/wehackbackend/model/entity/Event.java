@@ -53,6 +53,7 @@ public class Event {
 
     private Double price;
     private Integer capacity;
+    private Integer totalCapacity;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

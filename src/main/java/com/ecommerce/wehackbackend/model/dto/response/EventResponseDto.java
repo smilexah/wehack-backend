@@ -19,6 +19,7 @@ public class EventResponseDto {
     private String streamingUrl;
     private Double price;
     private Integer capacity;
+    private Integer totalCapacity;
     private LocalDateTime createdAt;
     private List<TicketDTO> tickets;
     private List<ReviewDTO> reviews;
