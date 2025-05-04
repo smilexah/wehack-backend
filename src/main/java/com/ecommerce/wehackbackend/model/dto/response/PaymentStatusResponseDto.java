@@ -1,17 +1,20 @@
 package com.ecommerce.wehackbackend.model.dto.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class PaymentStatusResponseDto {
-    private Long paymentId;
     private String status;
-    private Instant paidAt;
-    private String transactionReference;
-    private String paymentMethod;
+    private String transactionId;
+    private LocalDateTime processedAt;
+    private String receiptUrl;
 }

@@ -9,19 +9,13 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class PaymentResponseDto {
-    private Long paymentId;
-    private String clientSecret;
-    private String status;
-    private String transactionReference;
-    private Instant createdAt;
-//    private Long id;
-//    private Long orderId;
-//    private Long userId;
-//    private Double amount;
-//    private String currency;
-//    private String paymentMethod;
-//    private String status;
-//    private String transactionReference;
-//    private LocalDateTime paidAt;
-//    private String receiptUrl; // For Stripe receipts
+    private Long id;
+    private Long orderId;
+    private Long userId;
+    private Double amount;
+    private String currency;
+    private String paymentMethod;
+    private String status; // "pending", "success", "failed"
+    private String paymentUrl; // For redirecting to payment gateway
+    private LocalDateTime createdAt;
 }

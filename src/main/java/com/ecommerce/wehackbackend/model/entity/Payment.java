@@ -43,6 +43,9 @@ public class Payment {
     @Column(name = "transaction_reference")
     private String transactionReference;
 
+    @Transient
+    private String paymentUrl; // For redirecting to payment gateway
+
     @Column(name = "paid_at", nullable = false)
     private LocalDateTime paidAt = LocalDateTime.now();
 }

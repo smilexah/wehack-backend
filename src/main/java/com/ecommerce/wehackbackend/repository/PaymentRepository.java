@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByTransactionReference(String transactionReference);
+
+    boolean existsByOrderId(Long id);
 }

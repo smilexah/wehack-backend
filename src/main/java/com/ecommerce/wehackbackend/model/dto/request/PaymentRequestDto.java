@@ -5,17 +5,21 @@ import lombok.Data;
 
 @Data
 public class PaymentRequestDto {
-    @NotNull(message = "Order ID cannot be null")
+    @NotNull(message = "Order ID is required")
     private Long orderId;
 
-    @NotNull(message = "User ID cannot be null")
-    private Long userId;
+    @NotBlank(message = "Payment method is required")
+    private String paymentMethod; // "card", "wallet", etc.
 
-    @Positive(message = "Amount must be positive")
-    @NotNull(message = "Amount cannot be null")
-    private Double amount;
-
-    @NotBlank(message = "Currency cannot be blank")
+    @NotBlank(message = "Currency is required")
     @Size(min = 3, max = 3, message = "Currency must be 3 characters")
     private String currency;
+
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
+    @DecimalMax(value = "1000000.00", message = "Amount must be less than 1,000,000")
+    private Double amount;
+
+    @NotNull(message = "User ID is required")
+    private Long userId;
 }

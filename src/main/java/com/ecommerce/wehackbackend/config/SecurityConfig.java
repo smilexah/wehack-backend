@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("api/users/test").permitAll()
                 .requestMatchers("/api/users/me").authenticated()
+                .requestMatchers("api/payments").authenticated()
+                .requestMatchers("/api/payments/**").authenticated()
                 .requestMatchers("/api/users/generate-telegram-token").authenticated()
                 //.requestMatchers("/api/users/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

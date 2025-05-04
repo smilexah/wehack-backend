@@ -53,7 +53,7 @@ stripe:
     key: ${STRIPE_PUBLIC_KEY:pk_test_51RKj6l2c4vLBscRz3OjblZz98uC6FXJPhttuJzaEGJoKYEp0J5C2IBD7bzn1yur8hIt4X6KPOtKN9yM44wkCqQZ8007iXq8DcI}
   secret:
     key: ${STRIPE_SECRET_KEY:sk_test_51RKj6l2c4vLBscRzH8uNAWbFnSqJ0pyObmo1X3SM7DfvUgDY3SxcDinozQBd2aNrcqrqjdIWUxTN7Y4fgJ7yyv2500guJa9mkX}
-  webhook:
-    secret: ${STRIPE_WEBHOOK_SECRET:whsec_3347fe9d7a6737a33b655e23c77f386ce19d91771a3baa376cbcd539eb428050}
-    endpoint:
-      url: ${STRIPE_WEBHOOK_URL:http://localhost:8080/api/payment/stripe-webhook}
+  success:
+    url: ${STRIPE_SUCCESS_URL:http://localhost:8080/api/v1/stripe/success}
+  cancel:
+    url: ${STRIPE_CANCEL_URL:http://localhost:8080/api/v1/stripe/cancel}
