@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.Duration;
@@ -30,44 +31,98 @@ public class TelegramBot extends TelegramLongPollingBot {
             Long chatId = update.getMessage().getChatId();
 
             if (messageText.startsWith("/start")) {
-                String[] parts = messageText.split(" ");
-                if (parts.length == 2) {
-                    String token = parts[1];
-                    handleToken(chatId, token);
-                } else {
-                    sendMessage(chatId, "👋 Hello! To link your account, simply visit our secure login page below:\n\n🔗 https://we-hack-front-self.vercel.app/auth/login\n\nClick the link or copy it into your browser to get started!");                }
+                handleStartCommand(chatId, messageText);
             }
         }
+    }
+
+    private void handleStartCommand(Long chatId, String messageText) {
+        String[] parts = messageText.split(" ");
+        if (parts.length == 2) {
+            handleToken(chatId, parts[1]);
+        } else {
+            sendWelcomeMessage(chatId);
+        }
+    }
+
+    private void sendWelcomeMessage(Long chatId) {
+        String message = """
+                👋 *Welcome!* 
+                
+                To link your account, visit our secure login page:
+                🔗 [Login Page](https://we-hack-front-self.vercel.app/auth/login)
+                
+                Click the link or copy it to your browser""";
+        sendMarkdownV2Message(chatId, message);
     }
 
     private void handleToken(Long chatId, String token) {
         Optional<User> optionalUser = userRepository.findByTgLinkTokenAndIsActive(token);
 
         if (optionalUser.isEmpty()) {
-            sendMessage(chatId, "❌ Invalid or outdated token.");
+            sendMarkdownV2Message(chatId, "❌ *Invalid or outdated token*");
             return;
         }
 
         User user = optionalUser.get();
 
-        // TTL = 15 минут
-        if (user.getTgTokenCreatedAt() != null &&
-                Duration.between(user.getTgTokenCreatedAt(), LocalDateTime.now()).toMinutes() > 15) {
-            sendMessage(chatId, "⚠\uFE0F The token is out of date. Generate a new one on the website.");
+        if (isTokenExpired(user)) {
+            sendMarkdownV2Message(chatId, "⚠️ *Token expired*\\nGenerate a new one on the website");
             return;
         }
 
         if (user.getTgChatId() != null) {
-            sendMessage(chatId, "✅ Your account is already linked.");
+            sendMarkdownV2Message(chatId, "✅ *Account already linked*");
             return;
         }
 
+        linkUserAccount(user, chatId);
+        sendMarkdownV2Message(chatId, "🎉 *Linking successful!*\\nYou'll now receive event notifications");
+    }
+
+    private boolean isTokenExpired(User user) {
+        return user.getTgTokenCreatedAt() != null &&
+                Duration.between(user.getTgTokenCreatedAt(), LocalDateTime.now()).toMinutes() > 15;
+    }
+
+    private void linkUserAccount(User user, Long chatId) {
         user.setTgChatId(chatId);
-        user.setTgLinkToken(null); // Удаляем токен после привязки
+        user.setTgLinkToken(null);
         user.setTgTokenCreatedAt(null);
         userRepository.save(user);
+    }
 
-        sendMessage(chatId, "\uD83C\uDF89 Linking was successful! Now you will receive notifications about events at the university.");
+    /**
+     * Sends a message with MarkdownV2 formatting
+     * @param chatId Target chat ID
+     * @param text Message text with MarkdownV2 formatting
+     */
+    public void sendMarkdownV2Message(Long chatId, String text) {
+        sendMarkdownV2Message(chatId, text, true, null);
+    }
+
+    /**
+     * Sends a message with MarkdownV2 formatting and custom keyboard
+     * @param chatId Target chat ID
+     * @param text Formatted message text
+     * @param disableWebPagePreview Whether to disable link previews
+     * @param replyKeyboard Custom keyboard markup (nullable)
+     */
+    public void sendMarkdownV2Message(Long chatId, String text, boolean disableWebPagePreview, ReplyKeyboard replyKeyboard) {
+        SendMessage message = SendMessage.builder()
+                .chatId(chatId.toString())
+                .text(escapeMarkdownV2(text))
+                .parseMode("MarkdownV2")
+                .disableWebPagePreview(disableWebPagePreview)
+                .replyMarkup(replyKeyboard)
+                .build();
+
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Failed to send message to chat {}: {}\nOriginal message: {}",
+                    chatId, e.getMessage(), text, e);
+        }
     }
 
     public void sendMessage(Long chatId, String text) {
@@ -82,31 +137,29 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Sends a message with Markdown formatting support
-     * @param chatId Target chat ID
-     * @param text Message text with Markdown formatting
-     * @param disableWebPagePreview Whether to disable link previews
-     */
-    public void sendMessageWithMarkdown(Long chatId, String text, boolean disableWebPagePreview) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
-        message.enableMarkdown(true);
-        message.setDisableWebPagePreview(disableWebPagePreview);
-
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            log.error("Error sending Markdown message: {}", e.getMessage(), e);
-        }
-    }
 
     /**
-     * Overload with default disabled web page preview
+     * Escapes special characters for MarkdownV2
      */
-    public void sendMessageWithMarkdown(Long chatId, String text) {
-        sendMessageWithMarkdown(chatId, text, true);
+    private String escapeMarkdownV2(String text) {
+        return text.replace("_", "\\_")
+                .replace("*", "\\*")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace("(", "\\(")
+                .replace(")", "\\)")
+                .replace("~", "\\~")
+                .replace("`", "\\`")
+                .replace(">", "\\>")
+                .replace("#", "\\#")
+                .replace("+", "\\+")
+                .replace("-", "\\-")
+                .replace("=", "\\=")
+                .replace("|", "\\|")
+                .replace("{", "\\{")
+                .replace("}", "\\}")
+                .replace(".", "\\.")
+                .replace("!", "\\!");
     }
 
     @Override
