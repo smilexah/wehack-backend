@@ -5,6 +5,7 @@ import com.ecommerce.wehackbackend.model.entity.EventReview;
 import com.ecommerce.wehackbackend.model.entity.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,4 +29,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByDate(LocalDate date);
 
     List<Event> findByDateBetween(LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT e FROM Event e WHERE " +
+            "e.date >= :currentDate AND " +
+            "(e.dayBeforeNotified = false OR e.hourBeforeNotified = false)")
+    List<Event> findUnnotifiedEvents(@Param("currentDate") LocalDate currentDate);
 }

@@ -1,0 +1,3 @@
+ALTER TABLE events
+    ADD COLUMN day_before_notified BOOLEAN DEFAULT FALSE NOT NULL,
+    ADD COLUMN hour_before_notified BOOLEAN DEFAULT FALSE NOT NULL;

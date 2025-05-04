@@ -69,4 +69,12 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<UserEventReminder> reminders;
+
+
+
+    @Column(name = "day_before_notified")
+    private boolean dayBeforeNotified = false;
+
+    @Column(name = "hour_before_notified")
+    private boolean hourBeforeNotified = false;
 }
