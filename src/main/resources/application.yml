@@ -28,6 +28,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: UTC
   flyway:
     enabled: true # Включение Flyway для миграций базы данных
     baseline-on-migrate: true # Установка базовой версии при миграции
